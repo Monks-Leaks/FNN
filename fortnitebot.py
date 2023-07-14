@@ -178,6 +178,7 @@ try:
   
   # Create a function to handle the selection of a cosmetic
   def on_new_select(event):
+      im_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
       item_id = new_treeview.focus()
       item = new_treeview.item(item_id)
       new_cosmetic = item["values"]
@@ -188,8 +189,7 @@ try:
   
   # Add a label to display the selected cosmetic's image
   im_label = ttk.Label(all_cosmetics_frame, background="#000000")
-  im_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
-  
+
   # Bind the on_select function to the treeview selection event
   new_treeview.bind("<<TreeviewSelect>>", on_new_select)
   
@@ -237,6 +237,7 @@ except:
   
   # Create a function to handle the selection of a cosmetic
   def on_new_select(event):
+      im_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
       item_id = new_treeview.focus()
       item = new_treeview.item(item_id)
       new_cosmetic = item["values"][0]
@@ -274,6 +275,7 @@ try:
   
   # Create a function to handle the selection of a cosmetic
   def on_select(event):
+      img_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
       item_id = treeview.focus()
       item = treeview.item(item_id)
       cosmetic = item["values"]
@@ -284,7 +286,6 @@ try:
   
   # Add a label to display the selected cosmetic's image
   img_label = ttk.Label(cosmetics_frame, background="#000000")
-  img_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
   
   # Bind the on_select function to the treeview selection event
   treeview.bind("<<TreeviewSelect>>", on_select)
@@ -326,6 +327,7 @@ except:
     
     # Create a function to handle the selection of a cosmetic
     def on_select(event):
+        img_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
         item_id = treeview.focus()
         item = treeview.item(item_id)
         cosmetic = item["values"][0]
@@ -367,7 +369,7 @@ try:
   
   def display_weekly_image():
       if connection == "True":
-        image_url = "https://media.fortniteapi.io/images/displayAssets/T-Soldier-Hero-LocalZilla-Night-L.png"
+        image_url = "https://media.fortniteapi.io/images/displayAssets/T_UI_BP_S19_ChallengeBook_Misc_02.png"
         response = requests.get(image_url)
         imag = Image.open(BytesIO(response.content))
         imag = imag.resize((400, 400), Image.LANCZOS)
@@ -449,6 +451,7 @@ try:
   
   # Create a function to handle the selection of a cosmetic
   def onselect(event):
+      img_lael.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
       item_id = treeview_bannr.focus()
       item = treeview_bannr.item(item_id)
       cosmeti = item["values"]
@@ -459,7 +462,6 @@ try:
   
   # Add a label to display the selected cosmetic's image
   img_lael = ttk.Label(banners_frame, background="#000000")
-  img_lael.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
   
   # Bind the on_select function to the treeview selection event
   treeview_bannr.bind("<<TreeviewSelect>>", onselect)
@@ -500,6 +502,7 @@ except:
     
     # Create a function to handle the selection of a cosmetic
     def on_banner_select(event):
+        img_lael.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
         item_id = treeview_bannr.focus()
         item = treeview_bannr.item(item_id)
         cosmeti = item["values"][0]
