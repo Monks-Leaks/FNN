@@ -367,7 +367,7 @@ try:
   
   def display_weekly_image():
       if connection == "True":
-        image_url = "https://media.fortniteapi.io/images/displayAssets/T-Soldier-Hero-LocalZilla-Night-L.png"
+        image_url = "https://media.fortniteapi.io/images/displayAssets/T_UI_BP_S19_ChallengeBook_Misc_02.png"
         response = requests.get(image_url)
         imag = Image.open(BytesIO(response.content))
         imag = imag.resize((400, 400), Image.LANCZOS)
