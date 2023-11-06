@@ -1,1 +1,3 @@
-py FortniteBot.py
+py main.py
+
+@PAUSE

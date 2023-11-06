@@ -1,40 +1,67 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, Menu
 import requests
 from PIL import Image, ImageTk
 from io import BytesIO
 import os
 import urllib
+import io
 import colorama
 import time
 from colorama import Fore
 import sys
 import glob
-
+import subprocess
+import sys
+from pypresence import Presence
+import time
+from plyer import notification
 
 os.system("cls")
 os.system(
-"TITLE FNN+ Cosmetic Client")
+"TITLE FNN")
 os.system('cls' if os.name=='nt' else 'clear')
 
 colorama.init()
+
+currentversion = "1.0.0"
+
+def updater():
+  subprocess.Popen(['python', 'updater.py'])
+  sys.exit()
 
 try:
   connection = "True"
   fortniteapi = requests.get("https://fortnite-api.com/v2/aes")
   gmatrixcheck = requests.get("https://fortnitecentral.genxgames.gg/api/v1/aes")
+  fnnversion = requests.get("https://pastebin.com/raw/CjiAbuE0")
 except:
+    print(Fore.RED + "Connection: Offline")
     connection = "False"
     time.sleep(3)
 
 if connection == "True":
+    try:
+      client_id = '943824930984820817'  
+      RPC = Presence(client_id)
+      RPC.connect()
+      RPC.update(
+          details="The Fortnite Leaking App.",
+          large_image="logo",
+          start=time.time(),
+          buttons=[
+            {"label": "Download Now", "url": "https://github.com/Monks-Leaks/FNN"}
+        ],
+      )
+    except:
+       discord = False
     print(Fore.LIGHTBLUE_EX + "©2023 FNN+")
     print(Fore.LIGHTBLUE_EX + "©2023 MonksLeaks")
     print(Fore.LIGHTBLUE_EX + "©2023 Fortnite-API")
     print(Fore.LIGHTBLUE_EX + "©2023 Fortnite Central")
     print(Fore.LIGHTBLUE_EX + "©2023 GMatrixGames")
     print(Fore.LIGHTBLUE_EX + "©2023 FortniteApi.io")
-    print(Fore.YELLOW + "FNN+ Cosmetic Client is a non-official Client and is not endorsed by Epic Games in any way.")
+    print(Fore.YELLOW + "FNN is a non-official Client and is not endorsed by Epic Games in any way.")
     print(Fore.YELLOW + "Epic Games, Fortnite, and all associated properties are trademarks or registered trademarks of Epic Games, Inc.")
     print("")
     print(Fore.YELLOW + "Connection Status: " + Fore.GREEN + "Online\n")
@@ -45,6 +72,16 @@ if connection == "True":
       gmatrix = gmatrixcheck.json()["version"]
       fortniteapiversion = "0x" + fortniteapiv
       gmatrixversion = gmatrixv.lower()
+      fnnv = fnnversion.json()["version"]
+      if currentversion != fnnv:
+       print(Fore.YELLOW + "Update detected! Would you like to update? (" + Fore.GREEN + "y" + Fore.YELLOW + "/" + Fore.RED + "n" + Fore.YELLOW + ")\n")
+       upd = input(Fore.CYAN + "")
+       if upd == "y":
+           updater()
+       else:
+           print(Fore.RED + "Not Updating... Launching FNN\n")
+      else:
+        print(Fore.GREEN + f"You are on the latest version of FNN: Version {fnnv}\n")
       
       if fortniteapiversion != gmatrixversion:
           print(Fore.RED + "Fortnite-API Version does not match Fortnite version. Cosmetics may not be from this update!\n")
@@ -81,18 +118,13 @@ elif connection == "False":
         print(Fore.RED + "Not Reinstalling")
 
 root = tk.Tk()
-root.title("Fortnite Cosmetics")
+root.title("FNN")
+img = tk.PhotoImage(file='c:\\Users\\Stefan\\OneDrive\\Desktop\\FNN\\icon\\icon.ico')
+root.iconphoto(True, img)
 
 cosmetics_folder_path = "fn\\"
 
-# Set the window background color to black
-root.configure(background="#000000")
-
-# Set the window size and position
-
-root.state('zoomed')    
-
-# Create a custom style for the ttk widgets
+root.state('zoomed')
 custom_style = ttk.Style()
 custom_style.configure("TLabel", background="#000000", foreground="#000000")
 custom_style.configure("TButton", background="#212121", foreground="#ffffff", font=("Arial", 12))
@@ -106,33 +138,37 @@ aes_frame = ttk.Frame(tab_control)
 drops_frame = ttk.Frame(tab_control)
 quests_frame = ttk.Frame(tab_control)
 banners_frame = ttk.Frame(tab_control)
+eventflags_frame = ttk.Frame(tab_control)
 tab_control.add(all_cosmetics_frame, text='All Cosmetics')
 tab_control.add(cosmetics_frame, text='New Cosmetics')
 tab_control.add(banners_frame, text='Banners')
 tab_control.add(quests_frame, text='Quests')
 tab_control.add(drops_frame, text='Twitch Drops')
 tab_control.add(aes_frame, text='AES Keys')
+tab_control.add(eventflags_frame, text="Event Flags")
 tab_control.pack(expand=1, fill="both")
 
-# Create a frame for the UI
 frame = ttk.Frame(root)
 frame.pack(expand=True, fill="both")
 
-# Create a treeview to display the cosmetics
 new_treeview = ttk.Treeview(all_cosmetics_frame, columns=("id", "name", "rarity"), show="headings")
 new_treeview.heading("id", text="ID")
 new_treeview.heading("name", text="Name")
 new_treeview.heading("rarity", text="Rarity")
 new_treeview.pack(side="left", expand=True, fill="both")
 
-# Create a treeview to display the cosmetics
+event_treeview = ttk.Treeview(eventflags_frame, columns=("Event", "Start", "End"), show="headings")
+event_treeview.heading("Event", text="Event")
+event_treeview.heading("Start", text="Start")
+event_treeview.heading("End", text="End")
+event_treeview.pack(side="left", expand=True, fill="both")
+
 treeview = ttk.Treeview(cosmetics_frame, columns=("id", "name", "rarity"), show="headings")
 treeview.heading("id", text="ID")
 treeview.heading("name", text="Name")
 treeview.heading("rarity", text="Rarity")
 treeview.pack(side="left", expand=True, fill="both")
 
-# Add a scrollbar to the treeview
 scrollbar = ttk.Scrollbar(cosmetics_frame, orient="vertical", command=treeview.yview)
 scrollbar.pack(side="right", fill="y")
 treeview.configure(yscrollcommand=scrollbar.set)
@@ -166,7 +202,6 @@ treeview_quests.configure(yscrollcommand=scrollbar_quests.set)
 
 try:
   
-  # Create a function to display the image of the selected cosmetic
   def display_new_cosmetic_image(new_cosmetic):
       image_url = new_cosmetic["images"]["icon"]
       response = requests.get(image_url)
@@ -176,9 +211,7 @@ try:
       im_label.configure(image=photo)
       im_label.image = photo
   
-  # Create a function to handle the selection of a cosmetic
   def on_new_select(event):
-      im_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
       item_id = new_treeview.focus()
       item = new_treeview.item(item_id)
       new_cosmetic = item["values"]
@@ -187,17 +220,14 @@ try:
               display_new_cosmetic_image(c)
               break
   
-  # Add a label to display the selected cosmetic's image
   im_label = ttk.Label(all_cosmetics_frame, background="#000000")
-
-  # Bind the on_select function to the treeview selection event
+  im_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
+  
   new_treeview.bind("<<TreeviewSelect>>", on_new_select)
   
-  # Load the cosmetics data from the Fortnite API
-  response = requests.get("https://fortnite-api.com/v2/cosmetics/br/")
+  response = requests.get("https://fortnite-api.com/v2/cosmetics/br")
   new_cosmetics = response.json()["data"]   
   
-  # Add the cosmetics to the treeview
   for cosmetic in new_cosmetics:
       item_id = cosmetic["id"]
       name = cosmetic["name"]
@@ -205,23 +235,19 @@ try:
       item_values = (item_id, name, rarity)
       new_treeview.insert("", "end", values=item_values)
   
-      # Get the image URL
       try:
         image_url = cosmetic["images"]["icon"].replace("https://", "http://")
       except:
         if reinstall == "y":
           print(Fore.RED + "ERROR: Could not fetch image.")
   
-      # Get the cosmetic name and file path
       if reinstall == "y":
         cosmetic_name = cosmetic["id"] + ".png"
         cosmetic_file_path = os.path.join(cosmetics_folder_path + "\\Cosmetics\\", cosmetic_name)
         if os.path.exists(cosmetic_file_path):
             print(Fore.GREEN + f"Cosmetic file is installed and avaliable in the 'fn/New Cosmetics' folder: {cosmetic_file_path}!")
-        # Check if the image file already exists
         elif not os.path.exists(cosmetic_file_path):
             print(Fore.YELLOW + f"\nCosmetic is not installed in 'fn' folder. Installing {cosmetic_file_path}")
-            # Download the image
             urllib.request.urlretrieve(image_url, cosmetic_file_path)
             print(Fore.GREEN + f"Cosmetic is now installed in 'fn' folder: {cosmetic_file_path}")
       elif reinstall == "n":
@@ -235,9 +261,7 @@ except:
   for file_name in os.listdir(folder_path):
       images.append(os.path.join(folder_path, file_name))
   
-  # Create a function to handle the selection of a cosmetic
   def on_new_select(event):
-      im_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
       item_id = new_treeview.focus()
       item = new_treeview.item(item_id)
       new_cosmetic = item["values"][0]
@@ -250,7 +274,6 @@ except:
       im_label.configure(image=photo)
       im_label.image = photo
   
-  # Bind the on_select function to the treeview selection event
   new_treeview.bind("<<TreeviewSelect>>", on_new_select)
   
   for image in images:
@@ -262,7 +285,6 @@ except:
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Create a function to display the image of the selected cosmetic
 try:
   def display_cosmetic_image(cosmetic):
       image_url = cosmetic["images"]["icon"]
@@ -273,9 +295,7 @@ try:
       img_label.configure(image=photo)
       img_label.image = photo
   
-  # Create a function to handle the selection of a cosmetic
   def on_select(event):
-      img_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
       item_id = treeview.focus()
       item = treeview.item(item_id)
       cosmetic = item["values"]
@@ -284,17 +304,14 @@ try:
               display_cosmetic_image(c)
               break
   
-  # Add a label to display the selected cosmetic's image
   img_label = ttk.Label(cosmetics_frame, background="#000000")
+  img_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
   
-  # Bind the on_select function to the treeview selection event
   treeview.bind("<<TreeviewSelect>>", on_select)
   
-  # Load the cosmetics data from the Fortnite API
   response = requests.get("https://fortnite-api.com/v2/cosmetics/br/new")
   cosmetics = response.json()["data"]["items"]    
 
-  # Add the cosmetics to the treeview
   for cosmetic in cosmetics:
       item_id = cosmetic["id"]
       name = cosmetic["name"]
@@ -302,19 +319,15 @@ try:
       item_values = (item_id, name, rarity)
       treeview.insert("", "end", values=item_values)
   
-      # Get the image URL
       image_url = cosmetic["images"]["icon"].replace("https://", "http://")
   
-      # Get the cosmetic name and file path
       if reinstall == "y":
         cosmetic_name = cosmetic["id"] + ".png"
         cosmetic_file_path = os.path.join(cosmetics_folder_path + "\\new-cosmetics", cosmetic_name)
         if os.path.exists(cosmetic_file_path):
             print(Fore.GREEN + f"Cosmetic file is installed and avaliable in the 'fn' folder: {cosmetic_file_path}!")
-        # Check if the image file already exists
         elif not os.path.exists(cosmetic_file_path):
             print(Fore.YELLOW + f"\nCosmetic is not installed in 'fn' folder. Installing {cosmetic_file_path}")
-            # Download the image
             urllib.request.urlretrieve(image_url, cosmetic_file_path)
             print(Fore.GREEN + f"Cosmetic is now installed in 'fn' folder: {cosmetic_file_path}")
 except:
@@ -325,9 +338,7 @@ except:
     for file_name in os.listdir(folder_path):
         images.append(os.path.join(folder_path, file_name))
     
-    # Create a function to handle the selection of a cosmetic
     def on_select(event):
-        img_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
         item_id = treeview.focus()
         item = treeview.item(item_id)
         cosmetic = item["values"][0]
@@ -340,7 +351,6 @@ except:
         img_label.configure(image=photo)
         img_label.image = photo
     
-    # Bind the on_select function to the treeview selection event
     treeview.bind("<<TreeviewSelect>>", on_select)
     
     for image in images:
@@ -351,7 +361,6 @@ except:
         treeview.insert("", "end", values=item_values)
 
 try:
-  # Create a treeview to display the weekly quests
   weekly_treeview = ttk.Treeview(treeview_quests, columns=("name", "description", "total"), show="headings")
   weekly_treeview.heading("name", text="Name")
   weekly_treeview.heading("description", text="XP")
@@ -359,7 +368,6 @@ try:
   weekly_treeview.column("name", stretch=True, width=200)
   weekly_treeview.pack(side="left", expand=True, fill="both")
   
-  # Add a scrollbar to the weekly quests treeview
   weekly_scrollbar = ttk.Scrollbar(treeview_quests, orient="vertical", command=weekly_treeview.yview)
   weekly_scrollbar.pack(side="right", fill="y")
   weekly_treeview.configure(yscrollcommand=weekly_scrollbar.set)
@@ -377,10 +385,10 @@ try:
         imag_label.configure(image=photo)
         imag_label.image = photo
   
-  # Fetch the weekly quests from the API
-  headers = {"Authorization": "c53f871d-28d109a2-7572b6c1-33aea1f7"}
-  response = requests.get("https://fortniteapi.io/v3/challenges?type=weekly",
-                          headers=headers)
+  header = {
+        "Authorization": "c53f871d-28d109a2-7572b6c1-33aea1f7"
+    }
+  response = requests.get("https://fortniteapi.io/v3/challenges?type=weekly", headers=header)
   bundles = response.json()["bundles"]
   for bundle in bundles:
       quests = bundle["bundles"][0]["quests"]
@@ -404,19 +412,18 @@ except:
     weekly_treeview.insert("", "end", values=item_values)
 
 try:
-  # Add a scrollbar to the weekly quests treeview
   drops_scrollbar = ttk.Scrollbar(treeview_drops, orient="vertical", command=treeview_drops.yview)
   drops_scrollbar.pack(side="right", fill="y")
   treeview_drops.configure(yscrollcommand=drops_scrollbar.set)
   
-  # Fetch the weekly quests from the API
-  headers = {"Authorization": "c53f871d-28d109a2-7572b6c1-33aea1f7"}
-  response = requests.get("https://fortniteapi.io/v1/twitch/drops",
-                          headers=headers)
+  headers = {
+        "Authorization": "c53f871d-28d109a2-7572b6c1-33aea1f7"
+    }
+  response = requests.get("https://fortniteapi.io/v1/twitch/drops", headers=header)
   drops = response.json()["drops"]
   for drop in drops:
           name = drop["name"]
-          if name == "":     
+          if name == "":
             description = drop["dropUUID"]
             total = drop["status"]
             imig = drop["gameArtUrl"]
@@ -439,7 +446,6 @@ except:
 
 try:
 
-  # Create a function to display the image of the selected cosmetic
   def display_banner_image(cosmeti):
       image_url = cosmeti["images"]["icon"]
       response = requests.get(image_url)
@@ -449,9 +455,7 @@ try:
       img_lael.configure(image=photo)
       img_lael.image = photo
   
-  # Create a function to handle the selection of a cosmetic
   def onselect(event):
-      img_lael.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
       item_id = treeview_bannr.focus()
       item = treeview_bannr.item(item_id)
       cosmeti = item["values"]
@@ -460,17 +464,14 @@ try:
               display_banner_image(c)
               break
   
-  # Add a label to display the selected cosmetic's image
   img_lael = ttk.Label(banners_frame, background="#000000")
+  img_lael.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
   
-  # Bind the on_select function to the treeview selection event
   treeview_bannr.bind("<<TreeviewSelect>>", onselect)
   
-  # Load the cosmetics data from the Fortnite API
   response = requests.get("https://fortnite-api.com/v1/banners")
   banners = response.json()["data"]
   
-  # Add the cosmetics to the treeview
   for cosmeti in banners:
       item_id = cosmeti["id"]
       name = cosmeti["name"]
@@ -478,18 +479,14 @@ try:
       item_values = (item_id, name, rarity)
       treeview_bannr.insert("", "end", values=item_values)
   
-      # Get the image URL
       image_url = cosmeti["images"]["icon"]
       if reinstall == "y":
-        # Get the cosmetic name and file path
         cosmetic_name = cosmeti["id"] + ".png"
         cosmetic_file_path = os.path.join(cosmetics_folder_path, "Banners\\", cosmetic_name)
         if os.path.exists(cosmetic_file_path):
             print(Fore.GREEN + f"Banner file is installed and avaliable in the 'fn/banners' folder: {cosmetic_file_path}!")
-        # Check if the image file already exists
         elif not os.path.exists(cosmetic_file_path):
             print(Fore.YELLOW + f"\nBanner is not installed in 'fn/banners' folder. Installing {cosmetic_file_path}")
-            # Download the image
             urllib.request.urlretrieve(image_url, cosmetic_file_path)
             print(Fore.GREEN + f"Banner is now installed in 'fn' folder: {cosmetic_file_path}")
 except:
@@ -500,9 +497,7 @@ except:
     for file_name in os.listdir(folder_path):
         images.append(os.path.join(folder_path, file_name))
     
-    # Create a function to handle the selection of a cosmetic
     def on_banner_select(event):
-        img_lael.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
         item_id = treeview_bannr.focus()
         item = treeview_bannr.item(item_id)
         cosmeti = item["values"][0]
@@ -515,7 +510,6 @@ except:
         img_lael.configure(image=photo)
         img_lael.image = photo
     
-    # Bind the on_select function to the treeview selection event
     treeview_bannr.bind("<<TreeviewSelect>>", on_banner_select)
     
     for image in images:
@@ -526,16 +520,14 @@ except:
         treeview_bannr.insert("", "end", values=item_values)  
 
 try:
-  # Add a scrollbar to the weekly quests treeview
   AES_scrollbar = ttk.Scrollbar(treeview_aes, orient="vertical", command=treeview_aes.yview)
   AES_scrollbar.pack(side="right", fill="y")
   treeview_aes.configure(yscrollcommand=AES_scrollbar.set)
   
-  # Fetch the weekly quests from the API
-  response = requests.get("https://fortnite-api.com/v2/aes")
-  drops = response.json()["data"]["dynamicKeys"]
+  response = requests.get("https://fortnitecentral.genxgames.gg/api/v1/aes")
+  drops = response.json()["dynamicKeys"]
   for drop in drops:
-          name = drop["pakFilename"]
+          name = drop["name"]
           if name == "":     
             description = drop["key"]
           else:
@@ -549,9 +541,92 @@ except:
     item_values = (name, description)
     treeview_aes.insert("", "end", values=item_values)
 
+try:
+  event_scrollbar = ttk.Scrollbar(event_treeview, orient="vertical", command=event_treeview.yview)
+  event_scrollbar.pack(side="right", fill="y")
+  event_treeview.configure(yscrollcommand=event_scrollbar.set)
+  headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    }
+  response = requests.get("https://api.nitestats.com/v1/epic/modes", headers=headers)
+  event = response.json()["channels"]["client-events"]["states"][0]["activeEvents"]
+  for even in event:
+          name = even["eventType"]
+          started = even["activeSince"]
+          ended = even["activeUntil"]
+          item_values = (name, started, ended)
+          event_treeview.insert("", "end", values=item_values)
+except:
+    event_scrollbar.destroy()
+    name = "Not Connected to Internet"
+    description = "Internet is Unavailable so AES keys are unavailable."
+    item_values = (name, description)
+    event_treeview.insert("", "end", values=item_values)
+
 if connection == "True":
   print(Fore.GREEN + "\nFetched Files Succesfully!")
 
 print(Fore.GREEN + "\nApplication has started!")
+title = 'Application has started'
+message = 'FNN has launched!'
+
+
+try:
+    notification.notify(
+        title=title,
+        message=message 
+    )
+except Exception as e:
+    print(f"An error occurred: {str(e)}")
+
+menu = Menu(root)
+root.config(menu=menu)
+
+def discords():
+   RPC.close()
+   try:
+       notification.notify(
+           title="Discord Presence Disabled",
+           message="Discord Rich Presence for FNN has been disabled."
+       )
+   except Exception as e:
+       print(f"An error occurred: {str(e)}")
+
+def discorde():
+       client_id = '943824930984820817'
+       try:
+         RPC = Presence(client_id)
+         
+         RPC.connect()
+         
+         RPC.update(
+             details="The Fortnite Leaking App. Currently in Development.",
+             large_image="logo",
+             start=time.time(),
+             buttons=[
+               {"label": "Coming Soon", "url": "https://github.com/Monks-Leaks/FNN"}
+           ],
+         )
+         try:
+             notification.notify(
+                 title="Discord Presence Enabled",
+                 message="Discord Rich Presence for FNN has been enabled."
+             )
+         except Exception as e:
+             print(f"An error occurred: {str(e)}")
+       except:
+           try:
+             notification.notify(
+                 title="Discord Presence Could Not Be Enabled.",
+                 message="Open Discord and try again."
+             )
+           except Exception as e:
+             print(f"An error occurred: {str(e)}")
+
+file_menu = Menu()
+menu.add_cascade(label="Discord", menu=file_menu)
+file_menu.add_command(label="Disable Rich presence", command=discords)
+file_menu.add_command(label="Enable Rich presence", command=discorde)
 
 root.mainloop()
+RPC.clear()
+RPC.close()
