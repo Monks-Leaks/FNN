@@ -24,7 +24,7 @@ os.system('cls' if os.name=='nt' else 'clear')
 
 colorama.init()
 
-currentversion = "1.0.0"
+currentversion = "1.0.1"
 
 def updater():
   subprocess.Popen(['python', 'updater.py'])
@@ -603,7 +603,7 @@ def discorde():
              large_image="logo",
              start=time.time(),
              buttons=[
-               {"label": "Coming Soon", "url": "https://github.com/Monks-Leaks/FNN"}
+               {"label": "Download Now", "url": "https://github.com/Monks-Leaks/FNN"}
            ],
          )
          try:
