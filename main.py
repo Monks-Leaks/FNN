@@ -50,7 +50,7 @@ if connection == "True":
           large_image="logo",
           start=time.time(),
           buttons=[
-            {"label": "Releasing Soon", "url": "https://github.com/Monks-Leaks/FNN"}
+            {"label": "Download Now", "url": "https://github.com/Monks-Leaks/FNN"}
         ],
       )
     except:
