@@ -23,8 +23,8 @@ os.system(
 os.system('cls' if os.name=='nt' else 'clear')
 
 colorama.init()
-
-currentversion = "1.0.1"
+global reinstall
+currentversion = "1.1.0"
 
 def updater():
   subprocess.Popen(['python', 'updater.py'])
@@ -92,6 +92,9 @@ if connection == "True":
       reinstall = input("--> ")
     except:
         print("We are experiencing issue fetching data. You may continue in 5 seconds with some minor issues.")
+        time.sleep(5)
+        print(Fore.YELLOW + "Would you like to reinstall new cosmetics (Recommended for Updates and if you will be using Offline mode)" + Fore.YELLOW + "(" + Fore.GREEN + "y" + Fore.YELLOW + "/" + Fore.RED + "n" + Fore.YELLOW + ")\n")
+        reinstall = input("--> ")
 elif connection == "False":
       print(Fore.LIGHTBLUE_EX + "©2023 FNN+")
       print(Fore.LIGHTBLUE_EX + "©2023 MonksLeaks")
@@ -139,6 +142,7 @@ drops_frame = ttk.Frame(tab_control)
 quests_frame = ttk.Frame(tab_control)
 banners_frame = ttk.Frame(tab_control)
 eventflags_frame = ttk.Frame(tab_control)
+fnn_frame = ttk.Frame(tab_control)
 tab_control.add(all_cosmetics_frame, text='All Cosmetics')
 tab_control.add(cosmetics_frame, text='New Cosmetics')
 tab_control.add(banners_frame, text='Banners')
@@ -146,6 +150,7 @@ tab_control.add(quests_frame, text='Quests')
 tab_control.add(drops_frame, text='Twitch Drops')
 tab_control.add(aes_frame, text='AES Keys')
 tab_control.add(eventflags_frame, text="Event Flags")
+tab_control.add(fnn_frame, text="FNN+ News and Leaks")
 tab_control.pack(expand=1, fill="both")
 
 frame = ttk.Frame(root)
@@ -195,6 +200,15 @@ treeview_aes = ttk.Treeview(aes_frame, columns=("name", "description"), show="he
 treeview_aes.heading("name", text="Pak")
 treeview_aes.heading("description", text="Key")
 treeview_aes.pack(side="left", expand=True, fill="both")
+
+treeview_news = ttk.Treeview(fnn_frame, columns=("name", "description"), show="headings")
+treeview_news.heading("name", text="Title")
+treeview_news.heading("description", text="Description")
+treeview_news.pack(side="left", expand=True, fill="both")
+
+news_scrollbar = ttk.Scrollbar(fnn_frame, orient="vertical", command=treeview_news.yview)
+news_scrollbar.pack(side="right", fill="y")
+treeview_news.configure(yscrollcommand=news_scrollbar.set)
 
 scrollbar_quests = ttk.Scrollbar(quests_frame, orient="vertical", command=treeview_quests.yview)
 scrollbar_quests.pack(side="right", fill="y")
@@ -561,6 +575,66 @@ except:
     description = "Internet is Unavailable so AES keys are unavailable."
     item_values = (name, description)
     event_treeview.insert("", "end", values=item_values)
+
+try:
+  
+  i_label = ttk.Label(fnn_frame, background="#000000")
+  i_label.pack(side="right", expand=False, fill="y", padx=10, pady=5, ipadx=10, ipady=10)
+  
+  response = requests.get("https://pastebin.com/raw/EHmJGnL8")
+  news = response.json()["news"]
+  
+  def display_news_image(news_item):
+      image_url = news_item["imglink"]
+      response = requests.get(image_url)
+      img = Image.open(BytesIO(response.content))
+      img = img.resize((780, 470), Image.LANCZOS)
+      photo = ImageTk.PhotoImage(img)
+      i_label.configure(image=photo)
+      i_label.image = photo
+  
+  def _select(event):
+      item_id = treeview_news.focus()
+      item = treeview_news.item(item_id)
+      news_item = item["values"]
+      for c in news:
+          if c["name"] == news_item[0]:
+              display_news_image(c)
+              break
+  
+  treeview_news.bind("<<TreeviewSelect>>", _select)
+  
+  for cosmetic in news:
+      name = cosmetic["name"]
+      description = cosmetic["description"]
+      item_values = (name, description)
+      treeview_news.insert("", "end", values=item_values)
+  
+      try:
+          image_url = cosmetic["imglink"].replace("https://", "http://")
+      except:
+          if reinstall == "y":
+              print(Fore.RED + "ERROR: Could not fetch image.")
+  
+      if reinstall == "y":
+          cosmetic_name = cosmetic["name"] + ".png"
+          cosmetic_file_path = os.path.join(cosmetics_folder_path + "\\other\\", cosmetic_name)
+          if os.path.exists(cosmetic_file_path):
+              print(Fore.GREEN + f"Cosmetic file is installed and available {cosmetic_file_path}!")
+          elif not os.path.exists(cosmetic_file_path):
+              print(Fore.YELLOW + f"\nCosmetic is not installed in 'fn' folder. Installing {cosmetic_file_path}")
+              urllib.request.urlretrieve(image_url, cosmetic_file_path)
+              print(Fore.GREEN + f"Cosmetic is now installed in 'fn' folder: {cosmetic_file_path}")
+      elif reinstall == "n":
+          continue
+
+except:
+
+    news_scrollbar.destroy()
+    name = "Not Connected to Internet"
+    description = "Internet is Unavailable so FNN News&Leaks is unavailable."
+    item_values = (name, description)
+    treeview_news.insert("", "end", values=item_values)
 
 if connection == "True":
   print(Fore.GREEN + "\nFetched Files Succesfully!")
